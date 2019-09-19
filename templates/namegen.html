@@ -1,0 +1,230 @@
+<html>
+    <head>
+        <title>NG: {{ card.name }}</title>
+        <meta charset="utf-8">
+        <style>
+            a, a:visited, a:active{
+                color: steelblue;
+                font-weight: bold;
+                text-decoration: none;
+                font-family: Verdana;
+                font-size: 12px;
+            }
+            a:hover {
+                color: #bd362f;
+            }
+            #placeholder {
+                width: 100%;
+                height: 90%;
+                border: black 1px solid;
+                position: relative;
+            }
+            #result {
+                display: none;
+            }
+        </style>
+        <script>
+            var choices = {
+                'dragonkinNames.js': {0: "Male", 1: "Female", 2: "Neutral"},
+                'dragonNames.js': {0: "Male", 1: "Female", 2: "Neutral"},
+                'dwarfNames.js':{0: "Male", 1: "Female"},
+                'vampireNames.js': {0: "Male", 1: "Female"},
+                'wereNames.js': {0: "Male", 1: "Female"},
+                'wolfNames.js': {0: "Male", 1: "Female"},
+                'bearPets.js': {0: "Male", 1: "Female"},
+                'birdPets.js': {0: "Male", 1: "Female"},
+                'dogPets.js': {0: "Male", 1: "Female"},
+                'owlPets.js': {0: "Male", 1: "Female"},
+                'parrotPets.js': {0: "Male", 1: "Female"},
+                'monkeyPets.js': {0: "Male", 1: "Female"},
+                'pigNames.js': {0: "Male", 1: "Female"},
+                'sheepNames.js': {0: "Male", 1: "Female"},
+                'wizardNames.js': {0: "Male", 1: "Female"},
+                'knightNames.js': {0: "Male", 1: "Female"},
+                'witchNames.js': {0: "Male", 1: "Female"},
+                'catPets.js': {0: "Male", 1: "Female"},
+                'elfNames.js': {0: "Male", 1: "Female"},
+                'trollNames.js': {0: "Male", 1: "Female"},
+                'classNames.js': {0: "Player", 1: "NPC"}
+            };
+        </script>
+        <script id="jqueryJS" type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script>
+            var checkLoaded = null;
+            function createJS(file){
+                $("#result").html("");
+                $("#myresult").html("");
+                $("#options").html("");
+                if (file.indexOf(".js") > -1){
+                    var juju = document.getElementById("juju");
+                    if (juju){
+                        juju.remove();
+                    }
+
+                    var js = document.createElement("script");
+                    js.src = "http://www.fantasynamegenerators.com/scripts/"+ file;
+                    js.id = "juju";
+                    console.log(js.src);
+                    $(js).insertAfter("#jqueryJS");
+
+                    checkLoaded = setInterval(function(){
+                        console.log("checking function...");
+                        if (typeof(window.nameGen) == "function"){
+                            clearInterval(checkLoaded);
+                            console.log("function loaded");
+
+                            if (Object.keys(choices).indexOf(file) > -1){
+                                for (var k in choices[file]){
+                                    var choice = choices[file][k];
+                                    $("#options").append(
+                                        $("<input type='radio' name='choice' onclick='mynameGen("+ k +")' /> <em>" + choice + "</em>")
+                                    );
+                                }
+                            } else {
+                                mynameGen();
+                                $("#options").append(
+                                    $("<input type='button' value='GET' onclick='mynameGen();' />")
+                                );
+                            }
+                        }
+                    }, 1000);
+                }
+            }
+            function mynameGen(t){
+                $("#myresult").html("");
+                nameGen(t);
+
+                var html = $("#result").html();
+                var items = html.split("<br>");
+                items.splice(-1, 1);
+
+                var selectedOption = $("option:selected");
+                var onlyFirstnames = $("#firstname-only:checked").length;
+
+                for (var i in items){
+                    var item = items[i];
+                    var item_parts = null;
+                    if (onlyFirstnames && item.indexOf(" ") > -1){
+                        item_parts = item.split(" ");
+                        item = item_parts[0];
+                        if (item.substr(-1) == ","){
+                            item = item.slice(0, -1);
+                        }
+                    }
+
+                    $("#myresult").append(
+                        $("<li/>").append(
+                            $("<a/>").attr("onclick", "applyName('"+ item +"', '"+ selectedOption.attr('rel') +"')")
+                                .html(item)
+                                .attr("href", "#")
+                        )
+                    );
+                }
+
+                console.log(items);
+            }
+            function applyName(name, subrace){
+                if (name.indexOf(" (") > -1){
+                    var item_parts = name.split(" (");
+                    name = item_parts[0];
+                }
+
+                var data = "name=" + name + "&csrfmiddlewaretoken=" + $("input[name='csrfmiddlewaretoken']").first().val()
+                $.ajax({
+                    type: "post",
+                    url: "?",
+                    data: "name=" + name + "&race=" + subrace + "&csrfmiddlewaretoken=" + $("input[name='csrfmiddlewaretoken']").first().val(),
+                    dataType: 'json',
+                    success: function(data){
+                        if (data.success){
+                            window.opener.closeNG('{{ card_id }}', data.html);
+                            window.close();
+                        }else {
+                            alert("fail");
+                        }
+                    },
+                    error: function(a, b){
+                        alert(a, b);
+                    }
+                });
+
+            }
+        </script>
+
+    </head>
+    <body>{% csrf_token %}
+        <div id="main">
+            <select id="hola" onchange="createJS($(this).val())">
+                <option value=""></option>
+                <optgroup label="Race"></optgroup>
+                <option value="dragonkinNames.js" rel="drake">Dragonkin</option>
+                <option value="dwarfNames.js" rel="dwarf">Dwarf</option>
+                <option value="impNames.js" rel="imp">Imp</option>
+                <option value="vampireNames.js" rel="vampire">Daywalker</option>
+                <option value="robotNames.js" rel="robot">Robot</option>
+                <option value="dryadNames.js" rel="dryad">Dryad</option>
+                <option value="elementalNames.js" rel="elemental">Elemental</option>
+                <option value="wereNames.js" rel="werewolf">Werewolf</option>
+                <option value="deathNames.js" rel="undead">Undead</option>
+                <option value="sirenNames.js" rel="humanoid:siren">Siren</option>
+                <option value="wizardNames.js" rel="humanoid:wizard">Wizard</option>
+                <option value="nagaNames.js" rel="humanoid:naga">Naga</option>
+                <option value="dragonNames.js" rel="drake:dragon">Dragon</option>
+                <option value="knightNames.js" rel="humanoid:knight">Knight</option>
+                <option value="worldDefenders.js" rel="humanoid">Defender</option>
+                <option value="worldDestroyers.js" rel="humanoid">Destroyer</option>
+                <option value="demonNames.js" rel="imp:demon">Demon</option>
+                <option value="witchNames.js" rel="humanoid:witch">Witch</option>
+                <option value="giantNames.js" rel="humanoid:giant">Giant</option>
+                <option value="trollNames.js" rel="humanoid:troll">Troll</option>
+                <option value="elfNames.js" rel="humanoid:elf">Elf</option>
+                <option value="goblinNames.js" rel="goblin">Goblin</option>
+                <optgroup label="Pets"></optgroup>
+                <option value="wolfNames.js" rel="animal:wolf">Pet - Wolf</option>
+                <option value="bearPets.js" rel="animal:bear">Pet - Bear</option>
+                <option value="birdPets.js" rel="animal:bird">Pet - Bird</option>
+                <option value="catPets.js" rel="animal:cat">Pet - Cat/Kitty</option>
+                <option value="dogPets.js" rel="animal:dog">Pet - Dog</option>
+                <option value="owlPets.js" rel="animal:owl">Pet - Owl</option>
+                <option value="parrotPets.js" rel="animal:parrot">Pet - Parrot</option>
+                <option value="pigNames.js" rel="animal:pig">Pet - Pig</option>
+                <option value="sheepNames.js" rel="animal:sheep">Pet - Sheep</option>
+                <option value="monkeyPets.js" rel="animal:monkey">Pet - Monkey</option>
+                <optgroup label="Abilities"></optgroup>
+
+                <option value="spellNames.js" rel="ability">Spell</option>
+                <option value="potionNames.js" rel="ability">Potion</option>
+                <option value="curseNames.js" rel="ability">Curse</option>
+                <option value="poisonNames.js" rel="ability">Poison</option>
+                <option value="magicalDiseases.js" rel="ability">Disease</option>
+                <option value="enchantmentNames.js" rel="ability">Enchantment</option>
+                <option value="energyTypes.js" rel="ability">Energy</option>
+                <option value="relicNames.js" rel="ability">Artifact/Relic</option>
+                <option value="bombNames.js" rel="ability">Bomb</option>
+                <optgroup label="Other"></optgroup>
+
+                <option value="dungeonNames.js" rel="humanoid">Dungeon</option>
+                <option value="magicTomes.js" rel="ability">Magic Tome</option>
+                <option value="holyBooks.js" rel="ability">Holy Book</option>
+                <option value="magicWeapons.js" rel="ability">Magic Weapon</option>
+                <option value="weaponAbilities.js" rel="ability">Weapon Ability</option>
+                <option value="shieldNames.js" rel="ability">Shield</option>
+                <option value="classNames.js" rel="humanoid">Class / NPC</option>
+
+            </select>
+            &nbsp;
+             <span id="splice">
+                <input type="checkbox" id="firstname-only" value="" /> Firstname Only
+            </span>
+            <br/>
+            <span id="options"></span>
+
+            <div id="placeholder">
+                <ul id="myresult">
+
+                </ul>
+                <div id="result"></div>
+            </div>
+        </div>
+    </body>
+</html>

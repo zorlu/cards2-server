@@ -1,0 +1,9 @@
+ipython
+Django==1.11.17
+websockets
+uuid
+python-memcached
+python-slugify[unidecode]
+selenium==3.141.0
+numpy==1.15.1
+Pillow
