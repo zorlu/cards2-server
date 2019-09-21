@@ -35,6 +35,13 @@ username: **zorlu**  password: **112345**
 
 Websocket server will start **127.0.0.1:5678**
 
+#### Game modes
+
+* Player vs Player (uncomment required block in game_server.py) also not tested!
+* Player vs AI free style 
+* Player vs AI Dungeon stages (modify requires in client wsocket.js)
+* AI vs AI (inspector mode) (modify requires in client wsocket.js)
+
 ### TODO
 
 * documentation (soon)
