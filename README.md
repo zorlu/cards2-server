@@ -35,6 +35,9 @@ username: **zorlu**  password: **112345**
 
 Websocket server will start **127.0.0.1:5678**
 
+### Screenshot
+![Cards 2 running screenshot](https://github.com/zorlu/cards2-client/raw/master/client/img/screenshot.jpg)
+
 #### Game modes
 
 * Player vs Player (uncomment required block in game_server.py) also not tested!
