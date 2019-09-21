@@ -3,6 +3,7 @@ This is an open source educational Online Trading Card Game (TCG) Server written
 
 Example Client (HTML5/Javascript) repo is [here](https://github.com/zorlu/cards2-client).
 
+Documentation wiki is [here](https://github.com/zorlu/cards2-server/wiki)
 
 ### Requirements
 * **memcached** https://memcached.org/
@@ -45,6 +46,3 @@ Websocket server will start **127.0.0.1:5678**
 * Player vs AI Dungeon stages (modify requires in client wsocket.js)
 * AI vs AI (inspector mode) (modify requires in client wsocket.js)
 
-### TODO
-
-* documentation (soon)
