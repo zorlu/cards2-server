@@ -1,5 +1,5 @@
 ipython
-Django==1.11.23
+Django==2.2.24
 websockets
 uuid
 python-memcached
